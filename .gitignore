@@ -13,3 +13,4 @@ firebaseConfig.js
 *.ntvs*
 *.njsproj
 *.sln
+src/utils/firebaseConfig.js
