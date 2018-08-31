@@ -79,7 +79,6 @@ let store = new vuex.Store({
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     commit("setUser", user)
-                    dispatch('getPlaylist')
                     router.push('/dashboard')
                 } else {
                     router.push('/login')
