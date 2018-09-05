@@ -86,7 +86,8 @@ let store = new vuex.Store({
             });
         },
         addPlaylist({ state, commit, dispatch }, song) {
-            song.userid = state.user.email
+            song.creatorId = state.user.uid
+            song.creatorPriority = state.playlist[state.playlist.length - 1].creatorPriority + 1
             db.collection('playlist').add(song).then(doc => {
                 dispatch('getPlaylist')
             }).catch(err => {
@@ -94,13 +95,15 @@ let store = new vuex.Store({
             })
         },
         getPlaylist({ state, commit, dispatch }) {
-            console.log(state.user.displayName)
-            db.collection('playlist').where('userid', '==', state.user.email).get().then(querySnapshot => {
+            db.collection('playlist').where('creatorId', '==', state.user.uid).get().then(querySnapshot => {
                 let songs = []
                 querySnapshot.forEach(doc => {
                     let song = doc.data()
                     song.id = doc.id
                     songs.push(song)
+                })
+                songs.sort(function (a, b) {
+                    return a.creatorPriority - b.creatorPriority
                 })
                 commit('setPlaylist', songs)
             }).catch(err => {
