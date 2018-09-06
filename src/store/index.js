@@ -17,7 +17,9 @@ let store = new vuex.Store({
     state: {
         user: {},
         songs: [],
-        playlist: []
+        playlist: [],
+        userPlaylists: [],
+        activePlaylist: ''
     },
     mutations: {
         setUser(state, user) {
@@ -28,6 +30,17 @@ let store = new vuex.Store({
         },
         setPlaylist(state, songs) {
             state.playlist = songs
+        },
+        setUserPlaylists(state, payload) {
+            state.userPlaylists = payload
+            if (payload[0]) {
+                state.activePlaylist = payload[0].id
+            } else {
+                state.activePlaylist = state.user.uid + 'default'
+            }
+        },
+        setActivePlaylist(state, payload) {
+            state.activePlaylist = payload
         }
     },
     actions: {
@@ -85,17 +98,36 @@ let store = new vuex.Store({
                 }
             });
         },
+        getUserPlaylists({ state, commit, dispatch }) {
+            db.collection('playlists').where('creatorId', '==', state.user.uid).get().then(querySnapshot => {
+                let userPlaylists = []
+                querySnapshot.forEach(doc => {
+                    let list = doc.data()
+                    list.id = doc.id
+                    userPlaylists.push(list)
+                })
+                commit('setUserPlaylists', userPlaylists)
+                dispatch('getPlaylist')
+            }).catch(err => {
+                console.error(err)
+            })
+        },
         addPlaylist({ state, commit, dispatch }, song) {
             song.creatorId = state.user.uid
-            song.creatorPriority = state.playlist[state.playlist.length - 1].creatorPriority + 1
-            db.collection('playlist').add(song).then(doc => {
+            song.playlistId = state.activePlaylist
+            if (state.playlist[0]) {
+                song.creatorPriority = state.playlist[state.playlist.length - 1].creatorPriority + 1
+            } else {
+                song.creatorPriority = 0
+            }
+            db.collection('songs').add(song).then(doc => {
                 dispatch('getPlaylist')
             }).catch(err => {
                 console.error(err)
             })
         },
         getPlaylist({ state, commit, dispatch }) {
-            db.collection('playlist').where('creatorId', '==', state.user.uid).get().then(querySnapshot => {
+            db.collection('songs').where('creatorId', '==', state.user.uid).where('playlistId', '==', state.activePlaylist).get().then(querySnapshot => {
                 let songs = []
                 querySnapshot.forEach(doc => {
                     let song = doc.data()
@@ -110,12 +142,73 @@ let store = new vuex.Store({
                 console.error(err)
             })
         },
-        removePlaylist({ commit, dispatch }, id) {
-            db.collection('playlist').doc(id).delete().then(() => {
+        createPlaylist({ state, commit, dispatch }, name) {
+            let newPlaylist = {}
+            newPlaylist.name = name
+            newPlaylist.creatorId = state.user.uid
+            db.collection('playlists').add(newPlaylist).then(doc => {
+                dispatch('getUserPlaylists')
+                commit('setActivePlaylist', doc.id)
                 dispatch('getPlaylist')
             }).catch(err => {
                 console.error(err)
             })
+        },
+        changeActivePlaylist({ commit, dispatch }, id) {
+            commit('setActivePlaylist', id)
+            dispatch('getPlaylist')
+        },
+        removePlaylist({ commit, dispatch }, id) {
+            db.collection('songs').doc(id).delete().then(() => {
+                dispatch('getPlaylist')
+            }).catch(err => {
+                console.error(err)
+            })
+        },
+        priorityUp({ state, commit, dispatch }, index) {
+            if (index > 0) {
+                let currSong = state.playlist[index]
+                let othSong = state.playlist[index - 1]
+                let currPrio = currSong.creatorPriority
+                let othPrio = othSong.creatorPriority
+                currSong.creatorPriority = othPrio
+                othSong.creatorPriority = currPrio
+                //put both updated songs to db
+                db.collection('songs').doc(currSong.id).set(currSong).then(() => {
+                    // all is well
+                }).catch(err => {
+                    console.error(err)
+                })
+                db.collection('songs').doc(othSong.id).set(othSong).then(() => {
+                    // all is well
+                }).catch(err => {
+                    console.error(err)
+                })
+                dispatch('getPlaylist')
+            }
+
+        },
+        priorityDown({ state, commit, dispatch }, index) {
+            if (index < state.playlist.length - 1) {
+                let currSong = state.playlist[index]
+                let othSong = state.playlist[index + 1]
+                let currPrio = currSong.creatorPriority
+                let othPrio = othSong.creatorPriority
+                currSong.creatorPriority = othPrio
+                othSong.creatorPriority = currPrio
+                //put both updated songs to db
+                db.collection('songs').doc(currSong.id).set(currSong).then(() => {
+                    // all is well
+                }).catch(err => {
+                    console.error(err)
+                })
+                db.collection('songs').doc(othSong.id).set(othSong).then(() => {
+                    // all is well
+                }).catch(err => {
+                    console.error(err)
+                })
+                dispatch('getPlaylist')
+            }
         }
     }
 })

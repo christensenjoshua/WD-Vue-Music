@@ -19,7 +19,40 @@
           </div>
         </div>
         <div class="col-12 col-lg-6 pre-scrollable border border-dark rounded playlist-container">
-          <div class="row border border-light rounded text-white bg-dark text-left justify-content-between" v-for="song in playlist">
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#manage-playlist-modal">
+            Manage Playlists
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="manage-playlist-modal" tabindex="-1" role="dialog" aria-labelledby="manage-playlist-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="manage-playlist-modal-label">Manage Playlists</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form @submit.prevent="createPlaylist()">
+                    <input type="text" placeholder="Playlist Name" v-model="newPlaylist">
+                    <button type="submit" class="btn btn-success">Create Playlist</button>
+                  </form>
+                  <hr />
+                  <h5>Choose Active Playlist:</h5>
+                  <div v-for="list in userPlaylists">
+                    <button type="button" class="btn btn-primary" @click="changeActiveList(list.id)" data-dismiss="modal">{{list.name}}</button>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row border shadow border-light rounded text-white bg-dark text-left justify-content-between" v-for="(song, index) in playlist">
             <div class="col-2">
               <img :src="song.artworkUrl60">
             </div>
@@ -31,8 +64,8 @@
               <p>{{song.artistName}}</p>
             </div>
             <div class="col-1">
-              <button class="fa fa-arrow-circle-up" @click="priorityUp(song)"></button>
-              <button class="fa fa-arrow-circle-down" @click="priorityDown(song)"></button>
+              <button class="fa fa-arrow-circle-up" @click="priorityUp(index)"></button>
+              <button class="fa fa-arrow-circle-down" @click="priorityDown(index)"></button>
             </div>
             <div class="col-1">
               <button class="btn btn-danger btn-sm float-right" @click="removePlaylist(song.id)">X</button>
@@ -68,11 +101,12 @@
     name: 'Dashboard',
     data() {
       return {
-        query: ''
+        query: '',
+        newPlaylist: ''
       }
     },
     mounted() {
-      this.$store.dispatch('getPlaylist')
+      this.$store.dispatch('getUserPlaylists')
     },
     computed: {
       songs() {
@@ -83,6 +117,9 @@
       },
       playlist() {
         return this.$store.state.playlist
+      },
+      userPlaylists() {
+        return this.$store.state.userPlaylists
       }
     },
     methods: {
@@ -95,11 +132,11 @@
       removePlaylist(id) {
         this.$store.dispatch('removePlaylist', id)
       },
-      priorityUp(song) {
-        this.$store.dispatch('priorityUp', song)
+      priorityUp(index) {
+        this.$store.dispatch('priorityUp', index)
       },
-      priorityDown(song) {
-        this.$store.dispatch('priorityDown', song)
+      priorityDown(index) {
+        this.$store.dispatch('priorityDown', index)
       },
       playSong(song) {
         let audioElem = document.getElementById('music-player')
@@ -114,6 +151,13 @@
           `
         playingElem.innerHTML = template
         audioElem.play()
+      },
+      createPlaylist() {
+        this.$store.dispatch('createPlaylist', this.newPlaylist)
+        this.newPlaylist = ''
+      },
+      changeActiveList(listId) {
+        this.$store.dispatch('changeActivePlaylist', listId)
       }
     }
   }
