@@ -27,20 +27,21 @@
 
           <div class="row border shadow border-light rounded text-white bg-dark text-left justify-content-between" v-for="(song, index) in playlist">
             <div class="col-2">
-              <img :src="song.artworkUrl60">
+              <img :src="song.artworkUrl60" width="100%">
             </div>
             <div class="col-2">
               <button class="btn btn-primary btn-sm" @click="playSong(song)">Play</button>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p>{{song.trackName}}</p>
               <p>{{song.artistName}}</p>
             </div>
-            <div class="col-1">
+            <div class="col-2">
               <button class="fa fa-arrow-circle-up" @click="priorityUp(index)"></button>
+              <br />
               <button class="fa fa-arrow-circle-down" @click="priorityDown(index)"></button>
             </div>
-            <div class="col-1">
+            <div class="col-2">
               <button class="btn btn-danger btn-sm float-right" @click="removePlaylist(song.id)">X</button>
             </div>
           </div>
@@ -51,15 +52,15 @@
       <div class="container-fluid">
         <div class="row justify-content-between">
           <h1 class="col-12 title" v-if="songs[0]">Results</h1>
-          <div class="col-6 col-md-4" v-for="song in songs">
-            <div class="card text-white bg-dark" style="max-width: 40rem;">
+          <div class="col-12 col-sm-6 col-md-4" v-for="song in songs">
+            <div class="card text-white bg-dark border border-light shadow" style="max-width: 40rem;">
               <div class="card-body">
                 <h3 class="card-title">{{song.trackName}}</h3>
                 <h5>By: {{song.artistName}}</h5>
                 <img :src="song.artworkUrl100">
                 <hr />
                 <button class="btn btn-primary btn-sm" @click="playSong(song)">Play</button>
-                <button class="btn btn-primary btn-sm" @click="addPlaylist(song)">Add to Current Playlist</button>
+                <button class="btn btn-primary btn-sm button-wrap" @click="addPlaylist(song)">Add to Current Playlist</button>
               </div>
             </div>
           </div>
@@ -190,7 +191,7 @@
   }
 
   .card {
-    height: 20rem;
+    height: 100%;
   }
 
   .button-wrap {
