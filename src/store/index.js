@@ -158,7 +158,30 @@ let store = new vuex.Store({
             commit('setActivePlaylist', id)
             dispatch('getPlaylist')
         },
+        deletePlaylist({ state, commit, dispatch }, id) {
+            //deletes an entire playlist
+            db.collection('playlists').doc(id).delete().then(() => {
+                //playlist deleted, now for all the songs
+                db.collection('songs').where('creatorId', '==', state.user.uid).where('playlistId', '==', id).get().then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        db.collection('songs').doc(doc.id).delete().then(() => {
+                            //cool, it's gone, hopefully your database cleans up if the delete fails.
+                        })
+                    })
+                })
+                if (state.activePlaylist = id) {
+                    dispatch('getUserPlaylists')
+                } else {
+                    dispatch('getUserPlaylists')
+                    commit('setActivePlaylist', id)
+                    dispatch('getPlaylist')
+                }
+            }).catch(err => {
+                console.error(err)
+            })
+        },
         removePlaylist({ commit, dispatch }, id) {
+            //removes an item from a playlist
             db.collection('songs').doc(id).delete().then(() => {
                 dispatch('getPlaylist')
             }).catch(err => {

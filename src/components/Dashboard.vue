@@ -24,34 +24,7 @@
             Manage Playlists
           </button>
 
-          <!-- Modal -->
-          <div class="modal fade" id="manage-playlist-modal" tabindex="-1" role="dialog" aria-labelledby="manage-playlist-modal-label"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="manage-playlist-modal-label">Manage Playlists</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form @submit.prevent="createPlaylist()">
-                    <input type="text" placeholder="Playlist Name" v-model="newPlaylist">
-                    <button type="submit" class="btn btn-success">Create Playlist</button>
-                  </form>
-                  <hr />
-                  <h5>Choose Active Playlist:</h5>
-                  <div v-for="list in userPlaylists">
-                    <button type="button" class="btn btn-primary" @click="changeActiveList(list.id)" data-dismiss="modal">{{list.name}}</button>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
+
           <div class="row border shadow border-light rounded text-white bg-dark text-left justify-content-between" v-for="(song, index) in playlist">
             <div class="col-2">
               <img :src="song.artworkUrl60">
@@ -86,9 +59,45 @@
                 <img :src="song.artworkUrl100">
                 <hr />
                 <button class="btn btn-primary btn-sm" @click="playSong(song)">Play</button>
-                <button class="btn btn-primary btn-sm" @click="addPlaylist(song)">Add to Playlist</button>
+                <button class="btn btn-primary btn-sm" @click="addPlaylist(song)">Add to Current Playlist</button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="manage-playlist-modal" tabindex="-1" role="dialog" aria-labelledby="manage-playlist-modal-label"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="manage-playlist-modal-label">Manage Playlists</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="createPlaylist()">
+              <input type="text" placeholder="Playlist Name" v-model="newPlaylist" required>
+              <button type="submit" class="btn btn-success">Create Playlist</button>
+            </form>
+            <hr />
+            <h5>Choose Active Playlist:</h5>
+            <div class="text-left row" v-for="list in userPlaylists">
+              <div class="col-10">
+                <button type="button" class="btn btn-primary text-left btn-sm" style="white-space:normal;" @click="changeActiveList(list.id)"
+                  data-dismiss="modal">{{list.name}}</button>
+              </div>
+              <div class="col-2">
+                <button type="button" @click="deletePlaylist(list.id)" class="btn btn-danger btn-sm">X</button>
+              </div>
+              <br />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -158,6 +167,9 @@
       },
       changeActiveList(listId) {
         this.$store.dispatch('changeActivePlaylist', listId)
+      },
+      deletePlaylist(listId) {
+        this.$store.dispatch('deletePlaylist', listId)
       }
     }
   }
@@ -179,5 +191,9 @@
 
   .card {
     height: 20rem;
+  }
+
+  .button-wrap {
+    word-wrap: break-word;
   }
 </style>
