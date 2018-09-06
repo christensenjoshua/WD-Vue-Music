@@ -20,47 +20,44 @@
         </div>
         <div class="col-12 col-lg-6 pre-scrollable border border-dark rounded playlist-container">
           <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#manage-playlist-modal">
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#manage-playlist-modal">
             Manage Playlists
           </button>
 
 
           <div class="row border shadow border-light rounded text-white bg-dark text-left justify-content-between" v-for="(song, index) in playlist">
-            <div class="col-2">
-              <img :src="song.artworkUrl60" width="100%">
+            <div class="col-2 small-padding">
+              <img :src="song.artworkUrl60" class="img-fluid">
             </div>
-            <div class="col-2">
-              <button class="btn btn-primary btn-sm" @click="playSong(song)">Play</button>
+            <div class=" col-2 small-padding">
+              <button class="btn btn-secondary btn-sm " @click="playSong(song) ">Play</button>
             </div>
-            <div class="col-4">
+            <div class="col-5 small-padding">
               <p>{{song.trackName}}</p>
               <p>{{song.artistName}}</p>
             </div>
-            <div class="col-2">
-              <button class="fa fa-arrow-circle-up" @click="priorityUp(index)"></button>
-              <br />
-              <button class="fa fa-arrow-circle-down" @click="priorityDown(index)"></button>
-            </div>
-            <div class="col-2">
-              <button class="btn btn-danger btn-sm float-right" @click="removePlaylist(song.id)">X</button>
+            <div class="col small-padding">
+              <button class="btn btn-secondary fa fa-arrow-circle-up " @click="priorityUp(index) "></button>
+              <button class="btn btn-secondary fa fa-arrow-circle-down " @click="priorityDown(index) "></button>
+              <button class="btn btn-danger btn-sm " @click="removePlaylist(song.id) ">X</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="col-12">
-      <div class="container-fluid">
-        <div class="row justify-content-between">
-          <h1 class="col-12 title" v-if="songs[0]">Results</h1>
-          <div class="col-12 col-sm-6 col-md-4" v-for="song in songs">
-            <div class="card text-white bg-dark border border-light shadow" style="max-width: 40rem;">
-              <div class="card-body">
-                <h3 class="card-title">{{song.trackName}}</h3>
+    <div class="col-12 ">
+      <div class="container-fluid ">
+        <div class="row justify-content-between ">
+          <h1 class="col-12 title " v-if="songs[0] ">Results</h1>
+          <div class="col-12 col-sm-6 col-md-4 " v-for="song in songs ">
+            <div class="card text-white bg-dark border border-light shadow " style="max-width: 40rem; ">
+              <div class="card-body ">
+                <h3 class="card-title ">{{song.trackName}}</h3>
                 <h5>By: {{song.artistName}}</h5>
-                <img :src="song.artworkUrl100">
+                <img :src="song.artworkUrl100 ">
                 <hr />
-                <button class="btn btn-primary btn-sm" @click="playSong(song)">Play</button>
-                <button class="btn btn-primary btn-sm button-wrap" @click="addPlaylist(song)">Add to Current Playlist</button>
+                <button class="btn btn-secondary btn-sm " @click="playSong(song) ">Play</button>
+                <button class="btn btn-secondary btn-sm button-wrap " @click="addPlaylist(song) ">Add to Current Playlist</button>
               </div>
             </div>
           </div>
@@ -69,36 +66,36 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="manage-playlist-modal" tabindex="-1" role="dialog" aria-labelledby="manage-playlist-modal-label"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="manage-playlist-modal-label">Manage Playlists</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+    <div class="modal fade " id="manage-playlist-modal " tabindex="-1 " role="dialog " aria-labelledby="manage-playlist-modal-label "
+      aria-hidden="true ">
+      <div class="modal-dialog " role="document ">
+        <div class="modal-content ">
+          <div class="modal-header ">
+            <h5 class="modal-title " id="manage-playlist-modal-label ">Manage Playlists</h5>
+            <button type="button " class="close " data-dismiss="modal " aria-label="Close ">
+              <span aria-hidden="true ">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <form @submit.prevent="createPlaylist()">
-              <input type="text" placeholder="Playlist Name" v-model="newPlaylist" required>
-              <button type="submit" class="btn btn-success">Create Playlist</button>
+          <div class="modal-body ">
+            <form @submit.prevent="createPlaylist() ">
+              <input type="text " placeholder="Playlist Name " v-model="newPlaylist " required>
+              <button type="submit " class="btn btn-info ">Create Playlist</button>
             </form>
             <hr />
             <h5>Choose Active Playlist:</h5>
-            <div class="text-left row" v-for="list in userPlaylists">
-              <div class="col-10">
-                <button type="button" class="btn btn-primary text-left btn-sm" style="white-space:normal;" @click="changeActiveList(list.id)"
-                  data-dismiss="modal">{{list.name}}</button>
+            <div class="text-left row " v-for="list in userPlaylists ">
+              <div class="col-10 ">
+                <button type="button " class="btn btn-secondary text-left btn-sm " style="white-space:normal;
+                " @click="changeActiveList(list.id) " data-dismiss="modal ">{{list.name}}</button>
               </div>
-              <div class="col-2">
-                <button type="button" @click="deletePlaylist(list.id)" class="btn btn-danger btn-sm">X</button>
+              <div class="col-2 ">
+                <button type="button " @click="deletePlaylist(list.id) " class="btn btn-danger btn-sm ">X</button>
               </div>
               <br />
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <div class="modal-footer ">
+            <button type="button " class="btn btn-secondary " data-dismiss="modal ">Close</button>
           </div>
         </div>
       </div>
@@ -153,7 +150,7 @@
         let playingElem = document.getElementById('now-playing')
         audioElem.load()
         let template = `
-        <source src="${song.previewUrl}" type="audio/mp4">
+        <source src="${song.previewUrl} " type="audio/mp4 ">
           `
         audioElem.innerHTML = template
         template = `
@@ -196,5 +193,10 @@
 
   .button-wrap {
     word-wrap: break-word;
+  }
+
+  .small-padding {
+    padding-left: 2px;
+    padding-right: 2px;
   }
 </style>
