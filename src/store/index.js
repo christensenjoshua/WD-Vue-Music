@@ -196,18 +196,24 @@ let store = new vuex.Store({
                 let othPrio = othSong.creatorPriority
                 currSong.creatorPriority = othPrio
                 othSong.creatorPriority = currPrio
+                let promises = []
                 //put both updated songs to db
-                db.collection('songs').doc(currSong.id).set(currSong).then(() => {
+                promises.push(db.collection('songs').doc(currSong.id).set(currSong).then(() => {
                     // all is well
                 }).catch(err => {
                     console.error(err)
-                })
-                db.collection('songs').doc(othSong.id).set(othSong).then(() => {
-                    // all is well
+                }))
+                promises.push(
+                    db.collection('songs').doc(othSong.id).set(othSong).then(() => {
+                        // all is well
+                    }).catch(err => {
+                        console.error(err)
+                    }))
+                Promise.all(promises).then(res => {
+                    dispatch('getPlaylist')
                 }).catch(err => {
                     console.error(err)
                 })
-                dispatch('getPlaylist')
             }
 
         },
@@ -220,17 +226,24 @@ let store = new vuex.Store({
                 currSong.creatorPriority = othPrio
                 othSong.creatorPriority = currPrio
                 //put both updated songs to db
-                db.collection('songs').doc(currSong.id).set(currSong).then(() => {
-                    // all is well
+                let promises = []
+                promises.push(
+                    db.collection('songs').doc(currSong.id).set(currSong).then(() => {
+                        // all is well
+                    }).catch(err => {
+                        console.error(err)
+                    }))
+                promises.push(
+                    db.collection('songs').doc(othSong.id).set(othSong).then(() => {
+                        // all is well
+                    }).catch(err => {
+                        console.error(err)
+                    }))
+                Promise.all(promises).then(res => {
+                    dispatch('getPlaylist')
                 }).catch(err => {
                     console.error(err)
                 })
-                db.collection('songs').doc(othSong.id).set(othSong).then(() => {
-                    // all is well
-                }).catch(err => {
-                    console.error(err)
-                })
-                dispatch('getPlaylist')
             }
         }
     }
