@@ -30,7 +30,7 @@
             <div class="col-2 small-padding">
               <img :src="song.artworkUrl60" class="img-fluid">
             </div>
-            <div class=" col-2 small-padding">
+            <div class="col-2 small-padding">
               <button class="btn btn-secondary btn-sm" @click="playSong(song)">Play</button>
             </div>
             <div class="col-5 small-padding">
